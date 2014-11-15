@@ -1,0 +1,3 @@
+PEP draft for altered handling of StopException in generators
+
+This document, like most PEPs, has been placed in the public domain.

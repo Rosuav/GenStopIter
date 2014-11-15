@@ -80,6 +80,15 @@ which can then be detected. If it is not that subclass, it is an
 escaping exception rather than a return statement.
 
 
+Criticism
+=========
+
+Unofficial and apocryphal statistics suggest that this is seldom, if
+ever, a problem. [4]_ Code does exist which relies on the current
+behaviour, and there is the concern that this would be unnecessary
+code churn to achieve little or no gain.
+
+
 References
 ==========
 
@@ -91,6 +100,9 @@ References
 
 .. [3] Proposal by GvR
    (https://mail.python.org/pipermail/python-ideas/2014-November/029953.html)
+
+.. [4] Response by Steven D'Aprano
+   (https://mail.python.org/pipermail/python-ideas/2014-November/029994.html)
 
 
 Copyright

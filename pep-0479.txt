@@ -29,6 +29,17 @@ cause a noisy and easily-debugged traceback.  Currently,
 ``StopIteration`` can be absorbed by the generator construct.
 
 
+Background information
+======================
+
+When a generator frame is (re)started as a result of a ``__next__()``
+(or ``send()`` or ``throw()``) call, one of three outcomes can occur:
+
+* A yield point is reached, and the yielded value is returned
+* The frame is returned from; StopIteration is raised
+* An exception is thrown, which bubbles out.
+
+
 Proposal
 ========
 
@@ -38,6 +49,9 @@ new custom ``Exception`` subclass, but *not* deriving from
 ``StopIteration``) which causes the ``next()`` call (which invoked the
 generator) to fail, passing that exception out.  From then on it's
 just like any old exception. [3]_
+
+This affects the third outcome listed above, without altering any
+other effects.
 
 
 Consequences to existing code
@@ -68,7 +82,9 @@ Supplying a specific exception to raise on return
 Nick Coghlan suggested a means of providing a specific
 ``StopIteration`` instance to the generator; if any other instance of
 ``StopIteration`` is raised, it is an error, but if that particular
-one is raised, the generator has properly completed.
+one is raised, the generator has properly completed. This subproposal
+has been withdrawn in favour of better options, but is retained for
+reference.
 
 
 Making return-triggered StopIterations obvious
@@ -79,6 +95,23 @@ solution may be sufficient: when a generator returns, instead of
 raising ``StopIteration``, it raises a specific subclass of
 ``StopIteration`` which can then be detected.  If it is not that
 subclass, it is an escaping exception rather than a return statement.
+
+Of the three outcomes listed above::
+
+* A yielded value, obviously, would still be returned
+* If the frame is returned from, ``GeneratorReturn`` is raised
+* If an instance of ``GeneratorReturn`` would be raised, instead an
+  instance of ``StopIteration`` would be raised.
+
+In the third case, the ``StopIteration`` would have the ``value`` of
+the original ``GeneratorReturn``, and would reference the original
+exception in its ``__cause__``. If uncaught, this would clearly show
+the chaining of exceptions.
+
+This does *not* affect the discrepancy between generator expressions
+and list comprehensions, but allows generator-aware code (such as the
+contextlib and asyncio modules) to reliably differentiate between the
+second and third outcomes listed above.
 
 
 Criticism

@@ -53,6 +53,10 @@ unusual, but not unknown, and such constructs will fail.
 function that terminated the generator you'd have to do "return
 yield from helper()" rather than just "helper()".""")
 
+As this can break code, it is proposed to utilize the __future__
+mechanism to introduce this, finally making it standard in Python 3.6
+or 3.7.
+
 
 Alternate proposals
 ===================

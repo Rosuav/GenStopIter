@@ -1,4 +1,4 @@
-PEP: XXX
+PEP: 479
 Title: Change StopIteration handling inside generators
 Version: $Revision$
 Last-Modified: $Date$
@@ -14,7 +14,7 @@ Post-History:
 Abstract
 ========
 
-This PEP proposes a semantic change to StopIteration when raised
+This PEP proposes a semantic change to ``StopIteration`` when raised
 inside a generator, unifying the behaviour of list comprehensions and
 generator expressions somewhat.
 
@@ -22,38 +22,39 @@ generator expressions somewhat.
 Rationale
 =========
 
-The interaction of generators and StopIteration is currently somewhat
-surprising, and can conceal obscure bugs. An unexpected exception
-should not result in subtly altered behaviour, but should cause a
-noisy and easily-debugged traceback. Currently, StopIteration can be
-absorbed by the generator construct.
+The interaction of generators and ``StopIteration`` is currently
+somewhat surprising, and can conceal obscure bugs.  An unexpected
+exception should not result in subtly altered behaviour, but should
+cause a noisy and easily-debugged traceback.  Currently,
+``StopIteration`` can be absorbed by the generator construct.
 
 
 Proposal
 ========
 
-If a StopIteration is about to bubble out of a generator frame, it
-is replaced with some other exception (maybe RuntimeError, maybe a
-new custom Exception subclass, but *not* deriving from StopIteration)
-which causes the next() call (which invoked the generator) to fail,
-passing that exception out. From then on it's just like any old
-exception. [3]_
+If a ``StopIteration`` is about to bubble out of a generator frame, it
+is replaced with some other exception (maybe ``RuntimeError``, maybe a
+new custom ``Exception`` subclass, but *not* deriving from
+``StopIteration``) which causes the ``next()`` call (which invoked the
+generator) to fail, passing that exception out.  From then on it's
+just like any old exception. [3]_
 
 
 Consequences to existing code
 =============================
 
-This change will affect existing code that depends on StopIteration
-bubbling up. The pure Python reference implementation of groupby [1]_
-currently has comments "Exit on StopIteration" where it is expected
-that the exception will propagate and then be handled. This will be
-unusual, but not unknown, and such constructs will fail.
+This change will affect existing code that depends on
+``StopIteration`` bubbling up.  The pure Python reference
+implementation of ``groupby`` [1]_ currently has comments "Exit on
+``StopIteration``" where it is expected that the exception will
+propagate and then be handled.  This will be unusual, but not unknown,
+and such constructs will fail.
 
 (Nick Coghlan comments: """If you wanted to factor out a helper
 function that terminated the generator you'd have to do "return
 yield from helper()" rather than just "helper()".""")
 
-As this can break code, it is proposed to utilize the __future__
+As this can break code, it is proposed to utilize the ``__future__``
 mechanism to introduce this, finally making it standard in Python 3.6
 or 3.7.
 
@@ -64,27 +65,27 @@ Alternate proposals
 Supplying a specific exception to raise on return
 -------------------------------------------------
 
-Nick Coghlan suggested a means of providing a specific StopIteration
-instance to the generator; if any other instance of StopIteration is
-raised, it is an error, but if that particular one is raised, the
-generator has properly completed.
+Nick Coghlan suggested a means of providing a specific
+``StopIteration`` instance to the generator; if any other instance of
+``StopIteration`` is raised, it is an error, but if that particular
+one is raised, the generator has properly completed.
 
 
-Making return-triggered StopExceptions obvious
+Making return-triggered StopIterations obvious
 ----------------------------------------------
 
 For certain situations, a simpler and fully backward-compatible
 solution may be sufficient: when a generator returns, instead of
-raising StopIteration, it raises a specific subclass of StopIteration
-which can then be detected. If it is not that subclass, it is an
-escaping exception rather than a return statement.
+raising ``StopIteration``, it raises a specific subclass of
+``StopIteration`` which can then be detected.  If it is not that
+subclass, it is an escaping exception rather than a return statement.
 
 
 Criticism
 =========
 
 Unofficial and apocryphal statistics suggest that this is seldom, if
-ever, a problem. [4]_ Code does exist which relies on the current
+ever, a problem. [4]_  Code does exist which relies on the current
 behaviour, and there is the concern that this would be unnecessary
 code churn to achieve little or no gain.
 

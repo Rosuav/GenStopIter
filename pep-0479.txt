@@ -44,11 +44,9 @@ Proposal
 ========
 
 If a ``StopIteration`` is about to bubble out of a generator frame, it
-is replaced with some other exception (maybe ``RuntimeError``, maybe a
-new custom ``Exception`` subclass, but *not* deriving from
-``StopIteration``) which causes the ``next()`` call (which invoked the
-generator) to fail, passing that exception out.  From then on it's
-just like any old exception. [3]_
+is replaced with ``RuntimeError``, which causes the ``next()`` call
+(which invoked the generator) to fail, passing that exception out.
+From then on it's just like any old exception. [3]_
 
 This affects the third outcome listed above, without altering any
 other effects.
@@ -75,6 +73,15 @@ or 3.7.
 
 Alternate proposals
 ===================
+
+Raising somethign other than RuntimeError
+-----------------------------------------
+
+Rather than the generic RuntimeError, it might make sense to raise a
+new exception type ``UnexpectedStopIteration``. This has the downside
+of implicitly encouraging that it be caught; the correct action is to
+catch the original ``StopIteration``, not the chained exception.
+
 
 Supplying a specific exception to raise on return
 -------------------------------------------------

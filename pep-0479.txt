@@ -68,7 +68,13 @@ yield from helper()" rather than just "helper()".""")
 
 As this can break code, it is proposed to utilize the ``__future__``
 mechanism to introduce this, finally making it standard in Python 3.6
-or 3.7.
+or 3.7.  Any generator constructed in the presence of this directive
+will have a flag set on its code object, and generators with the flag
+set will behave according to this proposal.  Once the feature becomes
+standard, the flag may be dropped; code should not inspect generators
+for it.  (GvR: """And the flag should somehow be transferred to the
+stack frame when the function is executed, so the right action can be
+taken when an exception is about to bubble out of that frame.""")
 
 
 Alternate proposals

@@ -142,12 +142,15 @@ but if that is rejected, this alternate proposal would enable
 ``asyncio`` to distinguish between a ``return`` statement and an
 accidentally-raised ``StopIteration`` exception.
 
-Of the three outcomes listed above:
+Of the three outcomes listed above, two change:
 
-* A yielded value, obviously, would still be returned.
-* If the frame is returned from, ``GeneratorReturn`` is raised.
+* If a yield point is reached, the value, obviously, would still be
+  returned.
+* If the frame is returned from, ``GeneratorReturn`` (rather than
+  ``StopIteration``) is raised.
 * If an instance of ``GeneratorReturn`` would be raised, instead an
-  instance of ``StopIteration`` would be raised.
+  instance of ``StopIteration`` would be raised. Any other exception
+  bubbles up normally.
 
 In the third case, the ``StopIteration`` would have the ``value`` of
 the original ``GeneratorReturn``, and would reference the original

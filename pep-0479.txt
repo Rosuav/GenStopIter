@@ -137,7 +137,7 @@ The inspiration for this alternative proposal was Nick's observation
 [7]_ that if an ``asyncio`` coroutine [8]_ accidentally raises
 ``StopIteration``, it currently terminates silently, which may present
 a hard-to-debug mystery to the developer.  The main proposal turns
-such accidents in clearly distinguishable ``RuntimeError`` exceptions,
+such accidents into clearly distinguishable ``RuntimeError`` exceptions,
 but if that is rejected, this alternate proposal would enable
 ``asyncio`` to distinguish between a ``return`` statement and an
 accidentally-raised ``StopIteration`` exception.

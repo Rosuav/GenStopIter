@@ -98,6 +98,77 @@ object, and generators with the flag set will behave according to this
 proposal.  Once the feature becomes standard, the flag may be dropped;
 code should not inspect generators for it.
 
+Examples
+--------
+
+Generators which explicitly raise StopIteration can generally be
+changed to simply return instead.  This will be compatible with all
+existing Python versions, and will not be affected by __future__.
+
+Lib/ipaddress.py::
+    if other == self:
+        raise StopIteration
+Becomes::
+    if other == self:
+        return
+
+In some cases, this can be combined with ``yield from`` to simplify
+the code, such as Lib/difflib.py::
+    if context is None:
+        while True:
+            yield next(line_pair_iterator)
+Becomes::
+    if context is None:
+        yield from line_pair_iterator
+        return
+(The ``return`` is necessary for a strictly-equivalent translation,
+though in this particular file, there is no further code, and the
+``return`` can be elided.) For compatibility with pre-3.3 versions
+of Python, this could be written with an explicit ``for`` loop::
+    if context is None:
+        for line in line_pair_iterator:
+            yield line
+        return
+
+More complicated iteration patterns will need explicit try/catch
+constructs.  For example, a parser construct like this::
+    def unwrap(f):
+        while True:
+            data = next(f)
+            while True:
+                line = next(f)
+                if line == "- end -": break
+                data += line
+            yield data
+would need to be rewritten as::
+    def parser(f):
+        while True:
+            try:
+                data = next(f)
+                while True:
+                    line = next(f)
+                    if line == "- end -": break
+                    data += line
+                yield data
+            except StopIteration:
+                return
+or possibly::
+    def parser(f):
+        for data in f:
+            while True:
+                line = next(f)
+                if line == "- end -": break
+                data += line
+            yield data
+
+The latter form obscures the iteration by purporting to iterate over
+the file with a ``for`` loop, but then also fetches more data from
+the same iterator during the loop body.  It does, however, clearly
+differentiate between a "normal" termination (``StopIteration``
+instead of the initial line) and an "abnormal" termination (failing
+to find the end marker in the inner loop, which will now raise
+``RuntimeError``).
+
 
 Alternate proposals
 ===================

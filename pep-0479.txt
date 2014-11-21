@@ -170,6 +170,49 @@ to find the end marker in the inner loop, which will now raise
 ``RuntimeError``).
 
 
+Explanation of generators, iterators, and StopIteration
+=======================================================
+
+Under this proposal, generators and iterators would be distinct, but
+related, concepts.  Like the mixing of text and bytes in Python 2,
+the mixing of generators and iterators has resulted in certain
+perceived conveniences, but proper separation will make bugs more
+visible.
+
+An iterator is an object with a ``__next__`` method.  Like many other
+dunder methods, it may either return a value, or raise a specific
+exception - in this case, ``StopIteration`` - to signal that it has
+no value to return.  In this, it is similar to ``__getattr__`` (can
+raise ``AttributeError``), ``__getitem__`` (can raise ``KeyError``),
+and so on.  A helper function for an iterator can be written to
+follow the same protocol; for example::
+    def helper(x, y):
+        if x > y: return 1 / (x - y)
+        raise StopIteration
+    def __next__(self):
+        if self.a: return helper(self.b, self.c)
+        return helper(self.d, self.e)
+
+Both forms of signalling are carried through: a returned value is
+returned, an exception bubbles up.  The helper is written to match
+the protocol of the calling function.
+
+A generator function is one which contains a ``yield`` expression.
+Each time it is (re)started, it may either yield a value, or return
+(including "falling off the end").  A helper function for a generator
+can also be written, but it must also follow generator protocol::
+    def helper(x, y):
+        if x > y: yield 1 / (x - y)
+    def gen(self):
+        if self.a: return (yield from helper(self.b, self.c))
+        return (yield from helper(self.d, self.e))
+
+In both cases, any unexpected exception will bubble up. Due to the
+nature of generators and iterators, an unexpected ``StopIteration``
+inside a generator will be converted into ``RuntimeError``, but
+beyond that, all exceptions will propagate normally.
+
+
 Alternate proposals
 ===================
 

@@ -235,6 +235,31 @@ instead of the initial line) and an "abnormal" termination (failing
 to find the end marker in the inner loop, which will now raise
 ``RuntimeError``).
 
+This effect of ``StopIteration`` has been used to cut a generator
+expression short, creating a form of ``takewhile``::
+
+    def stop():
+        raise StopIteration
+    print(list(x for x in range(10) if x < 5 or stop()))
+    # prints [0, 1, 2, 3, 4]
+
+Under the current proposal, this form of non-local flow control is
+not supported, and would have to be rewritten in statement form::
+
+    def gen():
+        for x in range(10):
+            if x >= 5: return
+            yield x
+    print(list(gen()))
+    # prints [0, 1, 2, 3, 4]
+
+While this is a small loss of functionality, it is functionality that
+often comes at the cost of readability, and just as ``lambda`` has
+restrictions compared to ``def``, so does a generator expression have
+restrictions compared to a generator function. In many cases, the
+transformation to full generator function will be trivially easy, and
+may improve structural clarity.
+
 
 Explanation of generators, iterators, and StopIteration
 =======================================================

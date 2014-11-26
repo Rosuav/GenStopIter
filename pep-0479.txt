@@ -143,8 +143,8 @@ under older Python versions as under the new semantics.
 This is done by enclosing those places in the generator body where a
 ``StopIteration`` is expected (e.g. bare ``next()`` calls or in some
 cases helper functions that are expected to raise ``StopIteration``)
-in a ``try/except`` construct that returns when ``StopIteration``
-returns.  The ``try/except`` construct should appear directly in the
+in a ``try/except`` construct that returns when ``StopIteration`` is
+raised.  The ``try/except`` construct should appear directly in the
 generator function; doing this in a helper function that is not itself
 a generator does not work.  If ``raise StopIteration`` occurs directly
 in a generator, simply replace it with ``return``.

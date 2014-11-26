@@ -2,7 +2,13 @@
 # impact of the exception conversions.
 
 def gen(depth):
-	if depth: return (yield from gen(depth-1))
+	if depth:
+		g=gen(depth-1)
+		try:
+			while True:
+				yield next(g)
+		except StopIteration:
+			return
 	yield 1
 	yield 2
 	yield 3

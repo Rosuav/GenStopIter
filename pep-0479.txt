@@ -52,7 +52,7 @@ stumble on these cases by accident::
         except:
             rollback()
             raise
-        finally:
+        else:
             commit()
     
     def do_it():

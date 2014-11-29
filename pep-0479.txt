@@ -433,6 +433,7 @@ another generator and relies on the latter's ``StopIteration`` to
 bubble out would still be potentially wrong, depending on the use made
 of the distinction between the two exception types.
 
+
 Converting the exception inside next()
 --------------------------------------
 

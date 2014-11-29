@@ -450,6 +450,45 @@ block of code which reliably works on multiple versions of Python.
 would help this; however, all code would still need to be rewritten.)
 
 
+Sub-proposal: decorator to explicitly request current behaviour
+---------------------------------------------------------------
+
+Nick Coghlan suggested [13]_ that the situations where the current
+behaviour is desired could be supported by means of a decorator::
+
+    from itertools import allow_implicit_stop
+
+    @allow_implicit_stop
+    def my_generator():
+        ...
+        yield next(it)
+        ...
+
+Which would be semantically equivalent to::
+
+    def my_generator():
+        try:
+            ...
+            yield next(it)
+            ...
+        except StopIteration
+            return
+
+but be faster, as it could be implemented by simply permitting the
+``StopIteration`` to bubble up directly.
+
+Single-source Python 2/3 code would also benefit in a 3.7+ world,
+since libraries like six and python-future could just define their own
+version of "allow_implicit_stop" that referred to the new builtin in
+3.5+, and was implemented as an identity function in other versions.
+
+However, due to the implementation complexities required, the ongoing
+compatibility issues created, the subtlety of the decorator's effect,
+and the fact that it would encourage the "quick-fix" solution of just
+slapping the decorator onto all generators instead of properly fixing
+the code in question, this sub-proposal has been rejected. [14]_
+
+
 Criticism
 =========
 
@@ -516,6 +555,12 @@ References
 
 .. [12] Post from Mark Shannon with alternate proposal
    (https://mail.python.org/pipermail/python-dev/2014-November/137129.html)
+
+.. [13] Idea from Nick Coghlan
+   (https://mail.python.org/pipermail/python-dev/2014-November/137201.html)
+
+.. [14] Rejection by GvR
+   (https://mail.python.org/pipermail/python-dev/2014-November/137243.html)
 
 Copyright
 =========

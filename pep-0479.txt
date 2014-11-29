@@ -100,6 +100,16 @@ Finally, the proposal also clears up the confusion about how to
 terminate a generator: the proper way is ``return``, not
 ``raise StopIteration``.
 
+As an added bonus, the above changes bring generator functions much
+more in line with regular functions.  If you wish to take a piece of
+code presented as a generator and turn it into something else, you
+can usually do this fairly simply, by replacing every ``yield`` with
+a call to ``print()`` or ``list.append()``; however, if there are any
+bare ``next()`` calls in the code, you have to be aware of them.  If
+the code was originally written without relying on ``StopIteration``
+terminating the function, the transformation would be that much
+easier.
+
 
 Background information
 ======================

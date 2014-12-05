@@ -1,3 +1,10 @@
 PEP 479 draft: altered handling of StopException in generators
 
 This document, like most PEPs, has been placed in the public domain.
+
+The final update to this repo incorporates Guido van Rossum's acceptance of
+the PEP, which marks the end of the draft period; I shall not be further
+maintaining this duplicate, so check here for the latest version:
+https://www.python.org/dev/peps/pep-0479/
+https://hg.python.org/peps/
+Edits are still welcome, but look at the official peps repo rather than here.
